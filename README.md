@@ -2,10 +2,11 @@
 
 
 ## project dependency
-![SpringBoot](https://img.shields.io/badge/3.2%2B-%36DB33F?style=flat&logo=springboot&label=springboot)
-![SpringSecurity](https://img.shields.io/badge/3.2%2B-%6DB33F?style=flat&logo=springsecurity&label=springsecurity)
+![SpringBoot](https://img.shields.io/badge/3.2%2B-%36DB33F?style=flat&logo=springboot&label=SpringBoot)
+![SpringSecurity](https://img.shields.io/badge/3.2%2B-%6DB33F?style=flat&logo=springsecurity&label=SpringSecurity)
 ![flyway](https://img.shields.io/badge/9.22.3-%6DB33F?style=flat&logo=flyway&label=flyway)
 ![MySQL](https://img.shields.io/badge/8.0%2B-%234479A1?style=flat&logo=mysql&label=MySQL)
+![MySQL](https://img.shields.io/badge/8.5-%230769AD?style=flat&logo=Gradle&label=Gradle)
 
 
 ## project setting
