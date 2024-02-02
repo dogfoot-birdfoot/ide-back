@@ -7,9 +7,8 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
-      MYSQL_DATABASE: ide
-      MYSQL_USER: ${USER_NAME}
-      MYSQL_PASSWORD: ${USER_PASSWORD}
+#      MYSQL_USER: ${USER_NAME}
+#      MYSQL_PASSWORD: ${USER_PASSWORD}
       TZ: Asia/Seoul
     command:
       - --character-set-server=utf8mb4
