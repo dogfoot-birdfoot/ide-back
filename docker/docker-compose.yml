@@ -1,0 +1,18 @@
+version: '4'
+
+services:
+  ide_db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: ide
+      MYSQL_USER: dogfoot
+      MYSQL_PASSWORD: birdfoot
+      TZ: Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
