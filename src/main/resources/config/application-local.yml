@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url:
-    username:
-    password:
+    url: jdbc:mysql://localhost:3306/ide
+    username: ide
+    password: ide321
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -15,9 +15,9 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
-    url:
-    user:
-    password:
+    url: jdbc:mysql://localhost:3306/ide
+    user: ide
+    password: ide321
 
 logging:
   level:
