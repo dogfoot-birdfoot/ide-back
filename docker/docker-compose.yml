@@ -1,18 +1,26 @@
 version: '4'
 
 services:
-  ide_db:
+  ide_mysql:
+    container_name: ide_mysql
     image: mysql:8.0
     restart: always
     environment:
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
       MYSQL_DATABASE: ide
-      MYSQL_USER: dogfoot
-      MYSQL_PASSWORD: birdfoot
+      MYSQL_USER: ${USER_NAME}
+      MYSQL_PASSWORD: ${USER_PASSWORD}
       TZ: Asia/Seoul
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     ports:
-      - "3306:3306"
+      - 3306:3306
     volumes:
       - ./data/mysql:/var/lib/mysql
+      - ./mysql/config/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ulimits:
+      nofile:
+        soft: 20000
+        hard: 40000
