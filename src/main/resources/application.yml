@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    group:
+      default:
+        - local
+        - default
+      local:
+        - default
+        - local
+      prod:
+        - default
+        - prod
+
