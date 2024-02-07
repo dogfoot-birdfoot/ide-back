@@ -1,4 +1,4 @@
-package com.ide.back.shared.constant;
+package com.ide.back.shared.type;
 
 import lombok.Getter;
 
