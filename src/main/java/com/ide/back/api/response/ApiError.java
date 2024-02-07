@@ -1,6 +1,6 @@
 package com.ide.back.api.response;
 
-import com.ide.back.shared.constant.ApiErrorType;
+import com.ide.back.shared.type.ApiErrorType;
 import lombok.Getter;
 import lombok.Setter;
 
