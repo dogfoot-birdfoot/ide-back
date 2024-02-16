@@ -36,6 +36,6 @@ public class Folder {
     private List<File> files;
 
     @OneToMany(mappedBy = "parentFolder")
-    private List<File> subFolders;
+    private List<Folder> subFolders;
 
 }
