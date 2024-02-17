@@ -2,7 +2,9 @@ package com.ide.back.config.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ide.back.dto.chat.ChatMessageDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -15,6 +17,8 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class WebSocketChatHandler extends TextWebSocketHandler {
     private final ObjectMapper mapper;
 
@@ -23,10 +27,6 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
     //chatRoomId: {session1, session2}
     private final Map<Long, Set<WebSocketSession>> chatRoomSessionMap = new HashMap<>();
-
-    public WebSocketChatHandler(ObjectMapper mapper) {
-        this.mapper = mapper;
-    }
 
     //소켓 연결 확인
     @Override
