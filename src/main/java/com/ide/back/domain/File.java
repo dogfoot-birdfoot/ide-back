@@ -35,7 +35,7 @@ public class File {
     private Member user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "forder_id", nullable = false)
+    @JoinColumn(name = "folder_id", nullable = false)
     private Folder folder;
 
     @ManyToOne(fetch = FetchType.LAZY)
