@@ -1,6 +1,5 @@
 package com.ide.back.dto;
 
-import com.ide.back.domain.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +9,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @AllArgsConstructor
-public class Member {
+public class MemberDto {
 
     private Long Id;
     private String nickname;
@@ -19,8 +18,8 @@ public class Member {
     private Timestamp createdAt;
     private Timestamp deletedAt;
 
-    public static Member from(MemberEntity entity) {
-        return new Member(
+    public static MemberDto from(com.ide.back.domain.Member entity) {
+        return new MemberDto(
                 entity.getId(),
                 entity.getNickname(),
                 entity.getEmail(),

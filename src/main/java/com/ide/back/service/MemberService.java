@@ -5,8 +5,8 @@
     import com.ide.back.api.response.ApiResponse;
     import com.ide.back.config.security.jwt.JwtTokenProvider;
     import com.ide.back.controller.response.MemberJoinResponse;
-    import com.ide.back.domain.MemberEntity;
-    import com.ide.back.dto.Member;
+    import com.ide.back.domain.Member;
+    import com.ide.back.dto.MemberDto;
     import com.ide.back.exception.IdeApplicationException;
     import com.ide.back.repository.MemberRepository;
     import com.ide.back.shared.type.ApiErrorType;
@@ -30,7 +30,7 @@
 
 
         @Transactional
-        public Member join(String email, String password, String nickname) {
+        public MemberDto join(String email, String password, String nickname) {
             // 이메일 중복 체크
             memberRepository.findByEmail(email).ifPresent(it -> {
                 ApiError apiError = new ApiError(ApiErrorType.CONFLICT, "409", "DUPLICATED EMAIL");
@@ -44,19 +44,19 @@
             });
 
             // 회원가입
-            MemberEntity memberEntity = memberRepository.save(MemberEntity.of(email, passwordEncoder.encode(password), nickname));
+            Member member = memberRepository.save(Member.of(email, passwordEncoder.encode(password), nickname));
 
-            return Member.from(memberEntity);
+            return MemberDto.from(member);
         }
 
 
         public ApiResponse<MemberJoinResponse> login(String email, String password) {
             // 회원가입 여부 체크
-            MemberEntity memberEntity = memberRepository.findByEmail(email).orElseThrow(() ->
+            Member member = memberRepository.findByEmail(email).orElseThrow(() ->
                     new IdeApplicationException(new ApiError(ApiErrorType.NOT_FOUND, "404", "존재하지 않는 이메일입니다.")));
 
             // 비밀번호 체크
-            if (!passwordEncoder.matches(password, memberEntity.getPassword())) {
+            if (!passwordEncoder.matches(password, member.getPassword())) {
                 throw new IdeApplicationException(new ApiError(ApiErrorType.BAD_REQUEST, "400", "비밀번호가 일치하지 않습니다."));
             }
 
@@ -66,7 +66,7 @@
             String accessToken = jwtTokenProvider.generateAccessToken(authentication);
             String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
 
-            MemberJoinResponse response = new MemberJoinResponse(memberEntity.getId(), memberEntity.getEmail(), accessToken, refreshToken);
+            MemberJoinResponse response = new MemberJoinResponse(member.getId(), member.getEmail(), accessToken, refreshToken);
 
             return new ApiResponse<>(response);
         }

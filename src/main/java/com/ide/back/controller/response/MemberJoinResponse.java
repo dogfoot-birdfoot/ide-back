@@ -1,6 +1,6 @@
 package com.ide.back.controller.response;
 
-import com.ide.back.dto.Member;
+import com.ide.back.dto.MemberDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,7 +14,7 @@ public class MemberJoinResponse {
     private String refreshToken;
 
 
-    public static MemberJoinResponse fromMember(Member member, String accessToken, String refreshToken) {
+    public static MemberJoinResponse fromMember(MemberDto member, String accessToken, String refreshToken) {
         return new MemberJoinResponse(
                 member.getId(),
                 member.getEmail(),
