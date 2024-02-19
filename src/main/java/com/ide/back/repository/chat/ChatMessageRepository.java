@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-    List<ChatMessage> findAllByChatroom(ChatRoom chatRoom);
+    List<ChatMessage> findAllByChatroom(ChatRoom chatRoom, org.springframework.data.domain.Sort sort);
 
     List<ChatMessage> findAllByChatroom(ChatRoom chatRoom, Sort sort);
 
