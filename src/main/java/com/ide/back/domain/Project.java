@@ -1,15 +1,18 @@
 package com.ide.back.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "project")
 public class Project {
 
@@ -38,10 +41,17 @@ public class Project {
     @Column(nullable = false, length = 30)
     private String author;
 
-    @OneToMany(mappedBy = "project")
-    private List<Folder> folders;
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Folder> folders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project")
-    private List<File> files;
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<File> files = new ArrayList<>();
+
+    public static class ProjectBuilder {
+        public ProjectBuilder() {
+            this.folders = new ArrayList<>();
+            this.files = new ArrayList<>();
+        }
+    }
 }
 
