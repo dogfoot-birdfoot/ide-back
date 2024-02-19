@@ -1,6 +1,8 @@
 package com.ide.back.service;
 
 import com.ide.back.domain.Project;
+import com.ide.back.dto.ProjectDto;
+import com.ide.back.dto.ProjectResponseDto;
 import com.ide.back.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,8 +21,15 @@ public class ProjectService {
     }
 
     //프로젝트 생성
-    public Project createProject(Project project) {
-        return projectRepository.save(project);
+    public ProjectResponseDto createProject(ProjectDto dto) {
+        Project project = Project.builder()
+                .projectName(dto.getProjectName())
+                .description(dto.getDescription())
+                .owner(dto.getOwner())
+                .author(dto.getAuthor())
+                .build();
+        project = projectRepository.save(project);
+        return convertToResponseDto(project);
     }
 
     //프로젝트 검색
@@ -43,4 +52,14 @@ public class ProjectService {
         projectRepository.deleteById(projectId);
     }
 
+    private ProjectResponseDto convertToResponseDto(Project project) {
+        return ProjectResponseDto.builder()
+                .id(project.getId())
+                .projectName(project.getProjectName())
+                .description(project.getDescription())
+                .createdAt(project.getCreatedAt())
+                .owner(project.getOwner())
+                .author(project.getAuthor())
+                .build();
+    }
 }
