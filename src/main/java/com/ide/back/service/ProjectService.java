@@ -3,12 +3,15 @@ package com.ide.back.service;
 import com.ide.back.domain.Project;
 import com.ide.back.dto.ProjectDto;
 import com.ide.back.dto.ProjectResponseDto;
+import com.ide.back.exception.ProjectNotFoundException;
 import com.ide.back.repository.ProjectRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -33,23 +36,37 @@ public class ProjectService {
     }
 
     //프로젝트 검색
-    public Optional<Project> getProjectById(Long projectId) {
-        return projectRepository.findById(projectId);
+    public Optional<ProjectResponseDto> getProjectById(Long id) {
+        return projectRepository.findById(id)
+                .map(this::convertToResponseDto);
     }
 
     //모든 프로젝트 검색
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+    public List<ProjectResponseDto> getAllProjects() {
+        return projectRepository.findAll().stream()
+                .map(this::convertToResponseDto)
+                .collect(Collectors.toList());
     }
 
+    @Transactional
     //프로젝트 수정
-    public Project updateProject(Project project) {
-        return projectRepository.save(project);
+    public ProjectResponseDto updateProject(Long id, ProjectDto dto) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ProjectNotFoundException("ID: " + id));
+        project.setProjectName(dto.getProjectName());
+        project.setDescription(dto.getDescription());
+        project.setOwner(dto.getOwner());
+        project.setAuthor(dto.getAuthor());
+        project = projectRepository.save(project);
+        return convertToResponseDto(project);
     }
 
+    @Transactional
     //프로젝트 삭제
-    public void deleteProject(Long projectId) {
-        projectRepository.deleteById(projectId);
+    public void deleteProject(Long id) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new ProjectNotFoundException("ID " + id));
+        projectRepository.delete(project);
     }
 
     private ProjectResponseDto convertToResponseDto(Project project) {
