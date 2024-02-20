@@ -1,4 +1,4 @@
-package com.ide.back.controller.request;
+package com.ide.back.controller.member.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

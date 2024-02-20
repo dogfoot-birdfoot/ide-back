@@ -1,6 +1,23 @@
 package com.ide.back.service;
 
 
+    import com.ide.back.api.response.ApiError;
+    import com.ide.back.api.response.ApiResponse;
+    import com.ide.back.config.security.jwt.JwtTokenProvider;
+    import com.ide.back.controller.member.response.MemberJoinResponse;
+    import com.ide.back.domain.MemberEntity;
+    import com.ide.back.dto.Member;
+    import com.ide.back.exception.IdeApplicationException;
+    import com.ide.back.repository.MemberRepository;
+    import com.ide.back.shared.type.ApiErrorType;
+    import lombok.RequiredArgsConstructor;
+    import org.springframework.security.authentication.AuthenticationManager;
+    import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+    import org.springframework.security.core.Authentication;
+    import org.springframework.security.core.context.SecurityContextHolder;
+    import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+    import org.springframework.stereotype.Service;
+    import org.springframework.transaction.annotation.Transactional;
 import com.ide.back.api.response.ApiError;
 import com.ide.back.api.response.ApiResponse;
 import com.ide.back.config.security.jwt.JwtTokenProvider;

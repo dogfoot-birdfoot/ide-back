@@ -1,6 +1,7 @@
 package com.ide.back.domain.chat;
 
 import com.ide.back.domain.Member;
+import com.ide.back.domain.MemberEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,10 +32,10 @@ public class ChatMessage extends BaseTime{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private Member user;
+    private MemberEntity user;
 
     @Builder
-    public ChatMessage(Member user, String message, ChatRoom chatRoom){
+    public ChatMessage(MemberEntity user, String message, ChatRoom chatRoom){
         this.user = user;
         this.message = message;
         this.chatroom = chatRoom;

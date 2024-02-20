@@ -4,8 +4,15 @@ import com.ide.back.api.response.ApiResponse;
 import com.ide.back.controller.request.MemberJoinRequest;
 import com.ide.back.controller.response.MemberJoinResponse;
 import com.ide.back.dto.MemberDto;
+import com.ide.back.controller.member.request.MemberJoinRequest;
+import com.ide.back.controller.member.response.MemberJoinResponse;
+import com.ide.back.dto.Member;
 import com.ide.back.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

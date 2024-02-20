@@ -1,16 +1,24 @@
 package com.ide.back.service.chat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ide.back.domain.MemberEntity;
 import com.ide.back.domain.chat.ChatMessage;
 import com.ide.back.domain.chat.ChatRoom;
 import com.ide.back.dto.chat.request.ChatMessageRequestDto;
 import com.ide.back.dto.chat.response.ChatMessageResponseDto;
+import com.ide.back.exception.ApiException;
+import com.ide.back.repository.MemberRepository;
 import com.ide.back.repository.chat.ChatMessageRepository;
 import com.ide.back.repository.chat.ChatRoomRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +27,8 @@ import java.util.stream.Collectors;
 public class ChatMessageService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final MemberRepository memberRepository;
+    private final ObjectMapper mapper;
 
     //조회
     @Transactional
@@ -41,11 +51,26 @@ public class ChatMessageService {
     }
 
     //생성
-    public Long save(final Long chatRoomId, final ChatMessageRequestDto requestDto){
-        ChatRoom chatRoomEntity = this.chatRoomRepository.findById(chatRoomId).orElseThrow(
-                ()-> new IllegalArgumentException("해당 chatRoom이 존재하지 않습니다. chatRoomId = "+ chatRoomId)
+    @Transactional
+    public void saveMessage(ChatMessageRequestDto chatMessageRequestDto){
+        Long memberId = chatMessageRequestDto.getUser().getId();
+        MemberEntity member = this.memberRepository.findById(memberId).orElseThrow(
+                ()-> new IllegalArgumentException("해당 member가 존재하지 않습니다. memberId = "+memberId)
         );
-        return this.chatMessageRepository.save(requestDto.toEntity()).getId();
+        Long chatRoomId = chatMessageRequestDto.getChatRoom().getId();
+        ChatRoom chatRoom = this.chatRoomRepository.findById(chatRoomId).orElseThrow(
+                ()-> new IllegalArgumentException("해당 chattingRoom이 존재하지 않습니다. chatRoomId = "+chatRoomId)
+        );
+        ChatMessage chatMessage = new ChatMessage(member, chatMessageRequestDto.getMessage(), chatRoom);
+    }
+
+    //메세지 전송
+    public <T> void sendMessage(WebSocketSession session, T message){
+        try{
+            session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+        }catch(IOException e){
+            throw  new ApiException(HttpStatus.BAD_GATEWAY, "입출력 오류");
+        }
     }
 
     //삭제
