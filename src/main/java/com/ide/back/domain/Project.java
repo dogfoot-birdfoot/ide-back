@@ -2,6 +2,7 @@ package com.ide.back.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class Project {
     @Column(nullable = false, length = 255)
     private String description;
 
+    @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -52,6 +54,23 @@ public class Project {
             this.folders = new ArrayList<>();
             this.files = new ArrayList<>();
         }
+    }
+    
+    public Project(Member user, String projectName, String description, LocalDateTime createdAt, String owner, String author) {
+        this.user = user;
+        this.projectName = projectName;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.owner = owner;
+        this.author = author;
+    }
+
+    public void updateProjectFromDTO(ProjectRequestDTO updatedProjectDTO, Member member) {
+        this.projectName = updatedProjectDTO.getProjectName();
+        this.description = updatedProjectDTO.getDescription();
+        this.owner = updatedProjectDTO.getOwner();
+        this.author = updatedProjectDTO.getAuthor();
+        this.user = member;
     }
 }
 
