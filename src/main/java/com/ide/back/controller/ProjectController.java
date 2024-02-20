@@ -1,10 +1,11 @@
 package com.ide.back.controller;
 
-import com.ide.back.dto.ProjectDto;
-import com.ide.back.dto.ProjectResponseDto;
-import com.ide.back.exception.ProjectNotFoundException;
+
+import com.ide.back.dto.ProjectRequestDTO;
+import com.ide.back.dto.ProjectResponseDTO;
 import com.ide.back.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,35 +23,32 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<ProjectResponseDto> createProject(@RequestBody ProjectDto projectDto) {
-        ProjectResponseDto createProject = projectService.createProject(projectDto);
-        return ResponseEntity.ok(createProject);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ProjectResponseDto> getProjectById(@PathVariable Long id) {
-        return projectService.getProjectById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ProjectNotFoundException("ID " + id));
+    public ResponseEntity<ProjectResponseDTO> createProject(@RequestBody ProjectRequestDTO projectRequestDTO) {
+        ProjectResponseDTO createdProject = projectService.createProject(projectRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProjectResponseDto>> getAllProjects() {
-        List<ProjectResponseDto> projects = projectService.getAllProjects();
+    public ResponseEntity<List<ProjectResponseDTO>> getAllProjects() {
+        List<ProjectResponseDTO> projects = projectService.getAllProjects();
         return ResponseEntity.ok(projects);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ProjectResponseDto> updateProject(@PathVariable Long id, @RequestBody ProjectDto projectDto) {
-        ProjectResponseDto updateProject = projectService.updateProject(id, projectDto);
-        return ResponseEntity.ok(updateProject);
+    @GetMapping("/{id}")
+    public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long id) {
+        ProjectResponseDTO project = projectService.getProjectById(id);
+        return ResponseEntity.ok(project);
     }
 
-    @DeleteMapping("/id}")
-    public ResponseEntity<?> deleteProject(@PathVariable Long id) {
+    @PutMapping("/{id}")
+    public ResponseEntity<ProjectResponseDTO> updateProject(@PathVariable Long id, @RequestBody ProjectRequestDTO projectRequestDTO) {
+        ProjectResponseDTO updatedProject = projectService.updateProject(id, projectRequestDTO);
+        return ResponseEntity.ok(updatedProject);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }
