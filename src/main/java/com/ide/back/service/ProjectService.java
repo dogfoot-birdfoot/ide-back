@@ -1,9 +1,11 @@
 package com.ide.back.service;
 
+import com.ide.back.domain.Member;
 import com.ide.back.domain.Project;
-import com.ide.back.dto.ProjectDto;
-import com.ide.back.dto.ProjectResponseDto;
+import com.ide.back.dto.ProjectRequestDTO;
+import com.ide.back.dto.ProjectResponseDTO;
 import com.ide.back.exception.ProjectNotFoundException;
+import com.ide.back.repository.MemberRepository;
 import com.ide.back.repository.ProjectRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,66 +19,68 @@ import java.util.stream.Collectors;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final MemberRepository memberRepository;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository, MemberRepository memberRepository) {
         this.projectRepository = projectRepository;
+        this.memberRepository = memberRepository;
     }
 
     //프로젝트 생성
-    public ProjectResponseDto createProject(ProjectDto dto) {
-        Project project = Project.builder()
-                .projectName(dto.getProjectName())
-                .description(dto.getDescription())
-                .owner(dto.getOwner())
-                .author(dto.getAuthor())
-                .build();
+    public ProjectResponseDTO createProject(ProjectRequestDTO dto) {
+        Member member = memberRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+        Project project = dto.toEntity(member);
         project = projectRepository.save(project);
-        return convertToResponseDto(project);
+        return convertToResponseDTO(project);
     }
 
     //프로젝트 검색
-    public Optional<ProjectResponseDto> getProjectById(Long id) {
-        return projectRepository.findById(id)
-                .map(this::convertToResponseDto);
+    public ProjectResponseDTO getProjectById(Long id) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        return convertToResponseDTO(project);
     }
 
     //모든 프로젝트 검색
-    public List<ProjectResponseDto> getAllProjects() {
+    public List<ProjectResponseDTO> getAllProjects() {
         return projectRepository.findAll().stream()
-                .map(this::convertToResponseDto)
+                .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     //프로젝트 수정
-    public ProjectResponseDto updateProject(Long id, ProjectDto dto) {
+    public ProjectResponseDTO updateProject(Long id, ProjectRequestDTO projectRequestDTO) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new ProjectNotFoundException("ID: " + id));
-        project.setProjectName(dto.getProjectName());
-        project.setDescription(dto.getDescription());
-        project.setOwner(dto.getOwner());
-        project.setAuthor(dto.getAuthor());
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        if (projectRequestDTO.getUserId() != null) {
+            Member user = memberRepository.findById(projectRequestDTO.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            project.setUser(user);
+        }
+        project.updateProjectFromDTO(projectRequestDTO);
         project = projectRepository.save(project);
-        return convertToResponseDto(project);
+        return convertToResponseDTO(project);
     }
 
     @Transactional
     //프로젝트 삭제
     public void deleteProject(Long id) {
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new ProjectNotFoundException("ID " + id));
-        projectRepository.delete(project);
+        projectRepository.deleteById(id);
     }
 
-    private ProjectResponseDto convertToResponseDto(Project project) {
-        return ProjectResponseDto.builder()
-                .id(project.getId())
-                .projectName(project.getProjectName())
-                .description(project.getDescription())
-                .createdAt(project.getCreatedAt())
-                .owner(project.getOwner())
-                .author(project.getAuthor())
-                .build();
+
+    private ProjectResponseDTO convertToResponseDTO(Project project) {
+        ProjectResponseDTO dto = new ProjectResponseDTO();
+        dto.setId(project.getId());
+        dto.setProjectName(project.getProjectName());
+        dto.setDescription(project.getDescription());
+        dto.setCreatedAt(project.getCreatedAt());
+        dto.setOwner(project.getOwner());
+        dto.setAuthor(project.getAuthor());
+        return dto;
+
     }
 }
