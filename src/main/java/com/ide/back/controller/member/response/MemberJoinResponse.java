@@ -1,4 +1,4 @@
-package com.ide.back.controller.response;
+package com.ide.back.controller.member.response;
 
 import com.ide.back.dto.Member;
 import lombok.AllArgsConstructor;

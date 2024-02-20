@@ -1,13 +1,11 @@
-package com.ide.back.controller;
+package com.ide.back.controller.member;
 
 import com.ide.back.api.response.ApiResponse;
-import com.ide.back.controller.request.MemberJoinRequest;
-import com.ide.back.controller.response.MemberJoinResponse;
-import com.ide.back.domain.MemberEntity;
+import com.ide.back.controller.member.request.MemberJoinRequest;
+import com.ide.back.controller.member.response.MemberJoinResponse;
 import com.ide.back.dto.Member;
 import com.ide.back.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

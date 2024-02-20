@@ -1,6 +1,7 @@
 package com.ide.back.dto.chat.request;
 
 import com.ide.back.domain.Member;
+import com.ide.back.domain.MemberEntity;
 import com.ide.back.domain.chat.ChatMessage;
 import com.ide.back.domain.chat.ChatRoom;
 import lombok.Builder;
@@ -10,12 +11,17 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ChatMessageRequestDto {
-    private Member user;
+    public enum MessageType{
+        ENTER, TALK
+    }
+    private MessageType type;
+    private MemberEntity user;
     private String message;
     private ChatRoom chatRoom;
 
     @Builder
-    public ChatMessageRequestDto(Member user, String message, ChatRoom chatRoom){
+    public ChatMessageRequestDto(MessageType messageType, MemberEntity user, String message, ChatRoom chatRoom){
+        this.type = messageType;
         this.user = user;
         this.message = message;
         this.chatRoom = chatRoom;
