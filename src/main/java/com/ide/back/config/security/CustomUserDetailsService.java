@@ -1,6 +1,6 @@
 package com.ide.back.config.security;
 
-import com.ide.back.domain.MemberEntity;
+import com.ide.back.domain.Member;
 import com.ide.back.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -17,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        MemberEntity member = memberRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("이메일을 찾기 실패: " + email));
 
         return User.withUsername(member.getEmail())
