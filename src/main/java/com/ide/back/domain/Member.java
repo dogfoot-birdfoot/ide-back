@@ -57,7 +57,7 @@ public class Member {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = Timestamp.from(Instant.now()).toLocalDateTime();
+        this.createdAt = LocalDateTime.now();
     }
 
     public static Member of(String email, String password, String nickname) {

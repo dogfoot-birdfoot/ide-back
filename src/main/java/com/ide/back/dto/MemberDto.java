@@ -1,10 +1,12 @@
 package com.ide.back.dto;
 
+import com.ide.back.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,10 +17,10 @@ public class MemberDto {
     private String nickname;
     private String email;
     private String password;
-    private Timestamp createdAt;
-    private Timestamp deletedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime deletedAt;
 
-    public static MemberDto from(com.ide.back.domain.Member entity) {
+    public static MemberDto from(Member entity) {
         return new MemberDto(
                 entity.getId(),
                 entity.getNickname(),
