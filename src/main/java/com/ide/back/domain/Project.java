@@ -1,5 +1,6 @@
 package com.ide.back.domain;
 
+import com.ide.back.dto.ProjectRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -49,12 +50,12 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files = new ArrayList<>();
 
-    public static class ProjectBuilder {
-        public ProjectBuilder() {
-            this.folders = new ArrayList<>();
-            this.files = new ArrayList<>();
-        }
-    }
+//    public static class ProjectBuilder {
+//        public ProjectBuilder() {
+//            this.folders = new ArrayList<>();
+//            this.files = new ArrayList<>();
+//        }
+//    }
     
     public Project(Member user, String projectName, String description, LocalDateTime createdAt, String owner, String author) {
         this.user = user;
@@ -65,12 +66,11 @@ public class Project {
         this.author = author;
     }
 
-    public void updateProjectFromDTO(ProjectRequestDTO updatedProjectDTO, Member member) {
+    public void updateProjectFromDTO(ProjectRequestDTO updatedProjectDTO) {
         this.projectName = updatedProjectDTO.getProjectName();
         this.description = updatedProjectDTO.getDescription();
         this.owner = updatedProjectDTO.getOwner();
         this.author = updatedProjectDTO.getAuthor();
-        this.user = member;
     }
 }
 
