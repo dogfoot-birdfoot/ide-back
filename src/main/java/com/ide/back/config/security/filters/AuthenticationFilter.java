@@ -37,7 +37,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
         String resolve = tokenProvider.resolveToken(bearerToken);
 
-        if(resolve != null && tokenProvider.validationToken(resolve)){
+        if(resolve != null && tokenProvider.validateToken(resolve)){
             try{
                 Authentication authentication = tokenProvider.getAuthentication(resolve);
 
