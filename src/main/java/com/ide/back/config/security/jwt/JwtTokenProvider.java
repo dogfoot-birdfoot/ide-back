@@ -45,7 +45,6 @@ public class JwtTokenProvider {
     protected void init() {
         byte[] keyBytes = Base64.getDecoder().decode(secretKeyString);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
-        //this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
     public String generateAccessToken(Authentication authentication) {
@@ -57,10 +56,10 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .claim("email", principal.getUsername())
-                //.claim("role", principal.getAuthorities())
+                .claim("type", "access")
                 .expiration(exp)
                 .issuedAt(new Date())
-                .signWith(secretKey)//.signWith(secretKey, Jwts.SIG.HS256)
+                .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
     }
 
@@ -76,7 +75,7 @@ public class JwtTokenProvider {
 
         String refreshToken = Jwts.builder()
                 .claim("email", email)
-                //.claim("role", authentication.getAuthorities())
+                .claim("type", "refresh")
                 .expiration(exp)
                 .issuedAt(now)
                 .signWith(secretKey, Jwts.SIG.HS256)
@@ -98,14 +97,15 @@ public class JwtTokenProvider {
 
         log.info("Authentication claims : {}", claims.get("email"));
 
-        UserDetails userDetails = detailsService.loadUserByUsername(claims.get("email", String.class));
-        return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
+        UserDetails userDetails = detailsService.loadUserByUsername(claims.getSubject());
+
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     public String getUserId(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey).build()
-                .parseSignedClaims(token).getPayload().get("userId", String.class);
+                .parseSignedClaims(token).getPayload().get("email", String.class);
     }
 
     public String getRole(String token) {
@@ -116,14 +116,30 @@ public class JwtTokenProvider {
 
     // bearer 토큰
     public String resolveToken(String token) {
-        if (token != null && token.startsWith("Bearer")) {
+        if (token != null && token.startsWith("Bearer ")) {
             return token.substring(7);
         }
         return null;
     }
 
-    public boolean validationToken(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().after(new Date());
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().after(new Date());
+            return true;
+        } catch (Exception e) {
+            log.error("토큰 검증 에러 : {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean validateRefreshToken(String token) {
+        return refreshTokenRepository.findByToken(token).isPresent();
+    }
+
+    public String createNewAccessToken(String email) {
+        UserDetails userDetails = detailsService.loadUserByUsername(email);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        return generateAccessToken(authentication);
     }
 
 }

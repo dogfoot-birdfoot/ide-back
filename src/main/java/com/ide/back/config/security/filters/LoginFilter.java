@@ -23,24 +23,24 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected String obtainUsername(HttpServletRequest request) {
-        return request.getParameter("userId");
+        return request.getParameter("email");
     }
 
     @Override
     protected String obtainPassword(HttpServletRequest request) {
-        return request.getParameter("userPassword");
+        return request.getParameter("password");
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
 
-        String userId = obtainUsername(request);
+        String email = obtainUsername(request);
         String password = obtainPassword(request);
 
-        log.info("LoginFilter.attemptAuthentication -   {}", userId);
+        log.info("LoginFilter.attemptAuthentication -   {}", email);
 
-        return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(userId, password, null));
+        return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(email, password, null));
     }
 
     @Override
