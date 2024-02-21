@@ -12,9 +12,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Table(name = "project")
 public class Project {
 
@@ -36,7 +34,8 @@ public class Project {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    private LocalDateTime deletedAt;
+    // 어떻게 구현해야 하는지 모름
+//    private LocalDateTime deletedAt;
 
     @Column(nullable = false, length = 30)
     private String owner;
@@ -56,7 +55,8 @@ public class Project {
 //            this.files = new ArrayList<>();
 //        }
 //    }
-    
+
+    @Builder
     public Project(Member user, String projectName, String description, LocalDateTime createdAt, String owner, String author) {
         this.user = user;
         this.projectName = projectName;
