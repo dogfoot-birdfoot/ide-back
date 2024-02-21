@@ -3,6 +3,7 @@ package com.ide.back.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public class ProjectMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime joinedAt;
 

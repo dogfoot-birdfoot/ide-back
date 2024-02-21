@@ -1,15 +1,18 @@
 package com.ide.back.domain;
 
+import com.ide.back.dto.ProjectRequestDTO;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "project")
 public class Project {
 
@@ -27,10 +30,12 @@ public class Project {
     @Column(nullable = false, length = 255)
     private String description;
 
+    @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    private LocalDateTime deletedAt;
+    // 어떻게 구현해야 하는지 모름
+//    private LocalDateTime deletedAt;
 
     @Column(nullable = false, length = 30)
     private String owner;
@@ -38,10 +43,37 @@ public class Project {
     @Column(nullable = false, length = 30)
     private String author;
 
-    @OneToMany(mappedBy = "project")
-    private List<Folder> folders;
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Folder> folders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project")
-    private List<File> files;
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<File> files = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectMember> projectMembers = new ArrayList<>();
+
+//    public static class ProjectBuilder {
+//        public ProjectBuilder() {
+//            this.folders = new ArrayList<>();
+//            this.files = new ArrayList<>();
+//        }
+//    }
+
+    @Builder
+    public Project(Member user, String projectName, String description, LocalDateTime createdAt, String owner, String author) {
+        this.user = user;
+        this.projectName = projectName;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.owner = owner;
+        this.author = author;
+    }
+
+    public void updateProjectFromDTO(ProjectRequestDTO updatedProjectDTO) {
+        this.projectName = updatedProjectDTO.getProjectName();
+        this.description = updatedProjectDTO.getDescription();
+        this.owner = updatedProjectDTO.getOwner();
+        this.author = updatedProjectDTO.getAuthor();
+    }
 }
 
