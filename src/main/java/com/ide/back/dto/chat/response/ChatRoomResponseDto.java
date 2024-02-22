@@ -15,7 +15,7 @@ public class ChatRoomResponseDto {
     private String updatedDate;
 
     public ChatRoomResponseDto(ChatRoom entity){
-        this.id = entity.getId();
+        this.id = entity.getChatRoomId();
         this.project = entity.getProject();
         this.roomName = entity.getRoomName();
         this.createdDate = entity.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));

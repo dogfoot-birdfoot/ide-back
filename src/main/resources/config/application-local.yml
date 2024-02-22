@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ide
-    username: ide
-    password: ide321
+    url: jdbc:mysql://localhost:3306/back
+    username: root
+    password: root
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -11,13 +11,17 @@ spring:
     hibernate:
       ddl-auto: validate
     properties:
+      .hibernate.temp.use_jdbc_metadata_defaults: false
       'hibernate.format_sql': true
+      .hibernate.dialect: org.hibernate.dialect.MySQLDialect
+
   flyway:
+    locations: classpath:/db/migration
     enabled: true
     baseline-on-migrate: true
-    url: jdbc:mysql://localhost:3306/ide
-    user: ide
-    password: ide321
+    url: jdbc:mysql://localhost:3306/back
+    user: root
+    password: root
 
 logging:
   level:

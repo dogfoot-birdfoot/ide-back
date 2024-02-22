@@ -57,7 +57,7 @@ public class ChatMessageService {
         MemberEntity member = this.memberRepository.findById(memberId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 member가 존재하지 않습니다. memberId = "+memberId)
         );
-        Long chatRoomId = chatMessageRequestDto.getChatRoom().getId();
+        Long chatRoomId = chatMessageRequestDto.getChatRoom().getChatRoomId();
         ChatRoom chatRoom = this.chatRoomRepository.findById(chatRoomId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 chattingRoom이 존재하지 않습니다. chatRoomId = "+chatRoomId)
         );

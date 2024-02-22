@@ -1,6 +1,7 @@
 package com.ide.back.config.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ide.back.config.websocket.chat.ChattingRoom;
 import com.ide.back.domain.chat.ChatRoom;
 import com.ide.back.dto.chat.request.ChatMessageRequestDto;
 import com.ide.back.service.chat.ChatMessageService;
@@ -32,12 +33,12 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
         ChatMessageRequestDto chatMessageRequestDto = mapper.readValue(payload, ChatMessageRequestDto.class);
-        ChatRoom chatRoom = chatRoomService.findByIdEntity(chatMessageRequestDto.getChatRoom().getId());
-        chatRoom.handlerActions(session, chatMessageRequestDto, chatMessageService);
+        ChattingRoom chattingRoom = chatRoomService.findRoomById(chatMessageRequestDto.getChatRoom().getChatRoomId());
+        chattingRoom.handlerActions(session, chatMessageRequestDto, chatMessageService);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        ChatRoom.deleteSession(session);
+        chatRoomService.deleteSession(session);
     }
 }

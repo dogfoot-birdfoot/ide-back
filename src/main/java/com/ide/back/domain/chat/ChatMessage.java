@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 public class ChatMessage extends BaseTime{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long chatMessageId;
 
     @Column(nullable = false, length = 255)
     private String message;
@@ -36,7 +35,7 @@ public class ChatMessage extends BaseTime{
 
     @Builder
     public ChatMessage(MemberEntity user, String message, ChatRoom chatRoom){
-        this.user = user;
+        //this.user = user;
         this.message = message;
         this.chatroom = chatRoom;
     }

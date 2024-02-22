@@ -24,8 +24,9 @@ import java.util.Set;
 public class ChatRoom extends BaseTime {
     private static Set<WebSocketSession> sessions = new HashSet<>();
     @Id
+    @Column(name = "chatroom_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long chatRoomId;
 
     @Column(name = "room_name", nullable = false, length = 30)
     private String roomName;
@@ -49,24 +50,6 @@ public class ChatRoom extends BaseTime {
 
     public Long update(ChatRoomRequestDto requestDto){
         this.roomName = requestDto.getRoomName();
-        return this.id;
-    }
-
-    public void handlerActions(WebSocketSession session, ChatMessageRequestDto chatMessageRequestDto, ChatMessageService chatMessageService){
-        if (chatMessageRequestDto.getType().equals(ChatMessageRequestDto.MessageType.ENTER)){
-            sessions.add(session); // 채팅방에 입장하는 경우 참여자의 세선을 추가
-        }
-        chatMessageService.saveMessage(chatMessageRequestDto);
-        sendMessage(chatMessageRequestDto, chatMessageService);
-    }
-
-    private <T> void sendMessage(T message, ChatMessageService chatMessageService){
-        //채팅방에 참여중인 모든 사람에게 전송
-        sessions.parallelStream()
-                .forEach(session -> chatMessageService.sendMessage(session, message));
-    }
-
-    public static void deleteSession(WebSocketSession webSocketSession){
-        sessions.remove(webSocketSession);
+        return this.chatRoomId;
     }
 }
