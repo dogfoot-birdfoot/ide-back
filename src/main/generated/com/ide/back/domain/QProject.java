@@ -26,8 +26,6 @@ public class QProject extends EntityPathBase<Project> {
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
-    public final DateTimePath<java.time.LocalDateTime> deletedAt = createDateTime("deletedAt", java.time.LocalDateTime.class);
-
     public final StringPath description = createString("description");
 
     public final ListPath<File, QFile> files = this.<File, QFile>createList("files", File.class, QFile.class, PathInits.DIRECT2);
@@ -37,6 +35,8 @@ public class QProject extends EntityPathBase<Project> {
     public final StringPath owner = createString("owner");
 
     public final NumberPath<Long> projectId = createNumber("projectId", Long.class);
+
+    public final ListPath<ProjectMember, QProjectMember> projectMembers = this.<ProjectMember, QProjectMember>createList("projectMembers", ProjectMember.class, QProjectMember.class, PathInits.DIRECT2);
 
     public final StringPath projectName = createString("projectName");
 

@@ -36,7 +36,7 @@ public class QChatMessage extends EntityPathBase<ChatMessage> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedDate = _super.updatedDate;
 
-    public final com.ide.back.domain.QMemberEntity user;
+    public final com.ide.back.domain.QMember user;
 
     public QChatMessage(String variable) {
         this(ChatMessage.class, forVariable(variable), INITS);
@@ -57,7 +57,7 @@ public class QChatMessage extends EntityPathBase<ChatMessage> {
     public QChatMessage(Class<? extends ChatMessage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.chatroom = inits.isInitialized("chatroom") ? new QChatRoom(forProperty("chatroom"), inits.get("chatroom")) : null;
-        this.user = inits.isInitialized("user") ? new com.ide.back.domain.QMemberEntity(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new com.ide.back.domain.QMember(forProperty("user")) : null;
     }
 
 }

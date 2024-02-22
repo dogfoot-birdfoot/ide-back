@@ -1,9 +1,6 @@
 package com.ide.back.dto.chat.request;
 
-import com.ide.back.domain.Member;
-import com.ide.back.domain.MemberEntity;
 import com.ide.back.domain.Project;
-import com.ide.back.domain.chat.ChatMessage;
 import com.ide.back.domain.chat.ChatRoom;
 import lombok.Builder;
 import lombok.Getter;

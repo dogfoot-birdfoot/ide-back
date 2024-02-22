@@ -1,7 +1,7 @@
 package com.ide.back.service.chat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ide.back.domain.MemberEntity;
+import com.ide.back.domain.Member;
 import com.ide.back.domain.chat.ChatMessage;
 import com.ide.back.domain.chat.ChatRoom;
 import com.ide.back.dto.chat.request.ChatMessageRequestDto;
@@ -54,7 +54,7 @@ public class ChatMessageService {
     @Transactional
     public void saveMessage(ChatMessageRequestDto chatMessageRequestDto){
         Long memberId = chatMessageRequestDto.getUser().getId();
-        MemberEntity member = this.memberRepository.findById(memberId).orElseThrow(
+        Member member = this.memberRepository.findById(memberId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 member가 존재하지 않습니다. memberId = "+memberId)
         );
         Long chatRoomId = chatMessageRequestDto.getChatRoom().getChatRoomId();

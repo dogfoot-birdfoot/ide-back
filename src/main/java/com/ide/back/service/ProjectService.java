@@ -104,7 +104,7 @@ public class ProjectService {
                     ProjectMemberResponseDTO dto = new ProjectMemberResponseDTO();
                     dto.setId(pm.getId());
                     dto.setUserId(pm.getUser().getId());
-                    dto.setProjectId(pm.getProject().getId());
+                    dto.setProjectId(pm.getProject().getProjectId());
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -121,7 +121,7 @@ public class ProjectService {
     // DTO로 변환하는 메서드
     private ProjectResponseDTO convertToResponseDTO(Project project) {
         ProjectResponseDTO dto = new ProjectResponseDTO();
-        dto.setId(project.getId());
+        dto.setId(project.getProjectId());
         dto.setProjectName(project.getProjectName());
         dto.setDescription(project.getDescription());
         dto.setCreatedAt(project.getCreatedAt());

@@ -2,7 +2,7 @@ package com.ide.back.service.chat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ide.back.config.websocket.chat.ChattingRoom;
-import com.ide.back.domain.MemberEntity;
+import com.ide.back.domain.Member;
 import com.ide.back.domain.Project;
 import com.ide.back.domain.chat.ChatMessage;
 import com.ide.back.domain.chat.ChatRoom;
@@ -80,13 +80,13 @@ public class ChatRoomService {
     //생성
     @Transactional
     public Long creatRoom(Long projectId, Long memberId, String roomName){
-        MemberEntity member = this.memberRepository.findById(memberId).orElseThrow(
+        Member member = this.memberRepository.findById(memberId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 member가 존재하지 않습니다 memberId = " +memberId)
         );
         Project project = this.projectRepository.findById(projectId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 project가 존재하지 않습니다 projectId = " + projectId)
         );
-        boolean projectMember= this.projectMemberRepository.findProjectMemberByProjectAndUser(project, member);
+        boolean projectMember= this.projectMemberRepository.existsByUserAndProject(member, project);
         ChatRoomRequestDto requestDto = new ChatRoomRequestDto(roomName, project);
 
         //핸들러에서 채팅방 세션 연결하는거 추가 필요
@@ -105,7 +105,7 @@ public class ChatRoomService {
     @Transactional
     public void saveMessage(ChatMessageRequestDto chatMessageRequestDto){
         Long memberId = chatMessageRequestDto.getUser().getId();
-        MemberEntity member = this.memberRepository.findById(memberId).orElseThrow(
+        Member member = this.memberRepository.findById(memberId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 member가 존재하지 않습니다. memberId = "+memberId)
         );
         Long chatRoomId = chatMessageRequestDto.getChatRoom().getChatRoomId();

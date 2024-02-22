@@ -1,7 +1,6 @@
 package com.ide.back.dto.chat.request;
 
 import com.ide.back.domain.Member;
-import com.ide.back.domain.MemberEntity;
 import com.ide.back.domain.chat.ChatMessage;
 import com.ide.back.domain.chat.ChatRoom;
 import lombok.Builder;
@@ -15,12 +14,12 @@ public class ChatMessageRequestDto {
         ENTER, TALK
     }
     private MessageType type;
-    private MemberEntity user;
+    private Member user;
     private String message;
     private ChatRoom chatRoom;
 
     @Builder
-    public ChatMessageRequestDto(MessageType messageType, MemberEntity user, String message, ChatRoom chatRoom){
+    public ChatMessageRequestDto(MessageType messageType, Member user, String message, ChatRoom chatRoom){
         this.type = messageType;
         this.user = user;
         this.message = message;

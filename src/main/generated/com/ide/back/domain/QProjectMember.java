@@ -28,7 +28,7 @@ public class QProjectMember extends EntityPathBase<ProjectMember> {
 
     public final QProject project;
 
-    public final QMemberEntity user;
+    public final QMember user;
 
     public QProjectMember(String variable) {
         this(ProjectMember.class, forVariable(variable), INITS);
@@ -49,7 +49,7 @@ public class QProjectMember extends EntityPathBase<ProjectMember> {
     public QProjectMember(Class<? extends ProjectMember> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.project = inits.isInitialized("project") ? new QProject(forProperty("project"), inits.get("project")) : null;
-        this.user = inits.isInitialized("user") ? new QMemberEntity(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new QMember(forProperty("user")) : null;
     }
 
 }
