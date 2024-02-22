@@ -35,7 +35,7 @@ public class Project {
     private LocalDateTime createdAt;
 
     // 어떻게 구현해야 하는지 모름
-//    private LocalDateTime deletedAt;
+    private LocalDateTime deletedAt;
 
     @Column(nullable = false, length = 30)
     private String owner;
