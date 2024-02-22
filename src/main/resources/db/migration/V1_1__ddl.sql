@@ -1,14 +1,24 @@
+CREATE TABLE folder (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        folder_name VARCHAR(255) NOT NULL,
+                        created_at DATETIME NOT NULL,
+                        deleted_at DATETIME,
+                        parent_id BIGINT,
+                        user_id BIGINT NOT NULL,
+                        project_id BIGINT NOT NULL
+);
+
 CREATE TABLE member (
-                        id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                        nickname VARCHAR(30) NOT NULL,
-                        email VARCHAR(50) NOT NULL,
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        nickname VARCHAR(50) UNIQUE NOT NULL,
+                        email VARCHAR(50) UNIQUE NOT NULL,
                         password VARCHAR(255) NOT NULL,
                         created_at DATETIME NOT NULL,
                         deleted_at DATETIME
 );
 
 CREATE TABLE project (
-                         id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
                          user_id BIGINT NOT NULL,
                          project_name VARCHAR(50) NOT NULL,
                          description VARCHAR(255) NOT NULL,
@@ -18,20 +28,36 @@ CREATE TABLE project (
                          author VARCHAR(30) NOT NULL
 );
 
+CREATE TABLE project_member (
+                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                joined_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                user_id BIGINT NOT NULL,
+                                project_id BIGINT NOT NULL
+);
 
+CREATE TABLE refresh_token (
+                               id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                               token VARCHAR(255) NOT NULL,
+                               email VARCHAR(50) NOT NULL
+);
 
-CREATE TABLE folder (
-                        id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                        folder_name VARCHAR(255) NOT NULL,
-                        created_at DATETIME NOT NULL,
-                        deleted_at DATETIME,
-                        parent_id BIGINT,
-                        user_id BIGINT NOT NULL,
-                        project_id BIGINT NOT NULL
+CREATE TABLE chat_message (
+                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                              message VARCHAR(255) NOT NULL,
+                              created_at DATETIME NOT NULL,
+                              chatroom_id BIGINT NOT NULL,
+                              user_id BIGINT NOT NULL
+);
+
+CREATE TABLE chatroom (
+                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                          room_name VARCHAR(30) NOT NULL,
+                          created_at DATETIME NOT NULL,
+                          project_id BIGINT NOT NULL
 );
 
 CREATE TABLE file (
-                      id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
                       file_name VARCHAR(50) NOT NULL,
                       cloud_file_name VARCHAR(255) NOT NULL,
                       file_content VARCHAR(255),
@@ -42,24 +68,3 @@ CREATE TABLE file (
                       project_id BIGINT NOT NULL
 );
 
-CREATE TABLE chat_message (
-                              id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                              message VARCHAR(255) NOT NULL,
-                              created_at DATETIME NOT NULL,
-                              chatroom_id BIGINT NOT NULL,
-                              user_id BIGINT NOT NULL
-);
-
-CREATE TABLE chatroom (
-                          id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                          room_name VARCHAR(30) NOT NULL,
-                          created_at DATETIME NOT NULL,
-                          project_id BIGINT NOT NULL
-);
-
-CREATE TABLE project_member (
-                                id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                                joined_at DATETIME NOT NULL,
-                                user_id BIGINT NOT NULL,
-                                project_id BIGINT NOT NULL
-);

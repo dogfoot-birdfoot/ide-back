@@ -23,3 +23,8 @@ logging:
   level:
     'org.hibernate.SQL': debug
     'org.hibernate.type': trace
+
+jwt:
+  secret: secretKey1234511222222222222222222222222222222222222222222222222222222222222
+  access-exp: 3600000
+  refresh-exp: 3600000
