@@ -21,8 +21,8 @@ public class Folder {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
-    // 보류
-//    private LocalDateTime deletedAt;
+
+    private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
