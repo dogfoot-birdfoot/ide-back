@@ -19,9 +19,10 @@ public class Folder {
     @Column(name = "folder_name", nullable = false, length = 255)
     private String folderName;
 
-    @Column(nullable = false)
+    @Column(name = "created_at",nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
