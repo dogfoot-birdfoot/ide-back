@@ -1,7 +1,6 @@
 package com.ide.back.controller;
 
 
-import com.ide.back.dto.ProjectMemberResponseDTO;
 import com.ide.back.dto.ProjectRequestDTO;
 import com.ide.back.dto.ProjectResponseDTO;
 import com.ide.back.service.ProjectService;
@@ -18,48 +17,51 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-
     @Autowired
     public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
     }
-    // 프로젝트 생성
+
     @PostMapping
     public ResponseEntity<ProjectResponseDTO> createProject(@RequestBody ProjectRequestDTO projectRequestDTO) {
         ProjectResponseDTO createdProject = projectService.createProject(projectRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
     }
 
-    // 모든 프로젝트 조회
     @GetMapping
-    public ResponseEntity<List<ProjectResponseDTO>> getAllProjects(@RequestParam Long userId) {
-        List<ProjectResponseDTO> projects = projectService.getAllProjects(userId);
+    public ResponseEntity<List<ProjectResponseDTO>> getAllProjects() {
+        List<ProjectResponseDTO> projects = projectService.getAllProjects();
         return ResponseEntity.ok(projects);
     }
 
-    //특정 프로젝트 조회
     @GetMapping("/{id}")
-    public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long id ,@RequestParam Long userId) {
-        ProjectResponseDTO project = projectService.getProjectById(id, userId);
+    public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long id) {
+        ProjectResponseDTO project = projectService.getProjectById(id);
         return ResponseEntity.ok(project);
     }
-    //프로젝트 수정
+
     @PutMapping("/{id}")
-    public ResponseEntity<ProjectResponseDTO> updateProject(@PathVariable Long id, @RequestBody ProjectRequestDTO projectRequestDTO) {
-        ProjectResponseDTO updatedProject = projectService.updateProject(id, projectRequestDTO);
+    public ResponseEntity<ProjectResponseDTO> updateProject(@PathVariable Long id,@RequestParam Long userId, @RequestBody ProjectRequestDTO projectRequestDTO) {
+        ProjectResponseDTO updatedProject = projectService.updateProject(id, userId, projectRequestDTO);
         return ResponseEntity.ok(updatedProject);
     }
 
-    // 프로젝트 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
-        projectService.deleteProject(id);
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id,@RequestParam Long userId) {
+        projectService.deleteProject(id, userId);
         return ResponseEntity.noContent().build();
     }
-    // 프로젝트 멤버 조회
-    @GetMapping("/{id}/members")
-    public ResponseEntity<List<ProjectMemberResponseDTO>> getProjectMembers(@PathVariable Long id) {
-        List<ProjectMemberResponseDTO> members = projectService.getProjectMembers(id);
-        return ResponseEntity.ok(members);
+
+//    @GetMapping("/member/{userId}")
+//    public ResponseEntity<List<ProjectResponseDTO>> getProjectsForMember(@PathVariable Long userId) {
+//        List<ProjectResponseDTO> projects = projectService.getProjectsForMember(userId);
+//        return ResponseEntity.ok(projects);
+//    }
+
+    private Long getUserIdFromAuthenticationContext() {
+        //시큐리티를 사용하려고 했지만 어제 실행이 안돼서 포기
+        return null;
     }
+
+
 }

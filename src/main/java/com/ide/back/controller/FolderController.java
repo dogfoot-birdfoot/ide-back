@@ -20,49 +20,50 @@ public class FolderController {
         this.folderService = folderService;
     }
 
-    // 새로운 폴더 생성
+    // 폴더 생성 API
     @PostMapping
     public ResponseEntity<FolderResponseDTO> createFolder(@PathVariable Long projectId,
-                                                          @RequestBody FolderRequestDTO requestDTO,
-                                                          @RequestParam Long userId) {
-        //생성된 폴더 정보
-        FolderResponseDTO createdFolder = folderService.createFolder(projectId, requestDTO, userId);
+                                                          @RequestBody FolderRequestDTO requestDTO) {
+        // 폴더 서비스를 통해 폴더 생성 후 결과 반환
+        FolderResponseDTO createdFolder = folderService.createFolder(projectId, requestDTO);
         return new ResponseEntity<>(createdFolder, HttpStatus.CREATED);
     }
 
-    //프로젝트의 모든 폴더 가져오기
+    // 프로젝트 내 모든 폴더 조회 API
     @GetMapping
     public ResponseEntity<List<FolderResponseDTO>> getAllFoldersByProject(@PathVariable Long projectId,
                                                                           @RequestParam Long userId) {
-        //프로젝트의 모든 폴더 가져옴
+        // 폴더 서비스를 통해 프로젝트의 모든 폴더 조회 후 결과 반환
         List<FolderResponseDTO> folders = folderService.getAllFoldersByProject(projectId, userId);
         return ResponseEntity.ok(folders);
     }
 
-    //특정 폴더 가져오기
+    // 특정 폴더 조회 API
     @GetMapping("/{folderId}")
     public ResponseEntity<FolderResponseDTO> getFolderById(@PathVariable Long projectId,
                                                            @PathVariable Long folderId,
                                                            @RequestParam Long userId) {
+        // 폴더 서비스를 통해 특정 폴더 조회 후 결과 반환
         FolderResponseDTO folder = folderService.getFolderById(folderId, userId);
         return ResponseEntity.ok(folder);
     }
 
-    //특정 폴더 업데이트
+    // 폴더 정보 업데이트 API
     @PutMapping("/{folderId}")
     public ResponseEntity<FolderResponseDTO> updateFolder(@PathVariable Long projectId,
                                                           @PathVariable Long folderId,
-                                                          @RequestBody FolderRequestDTO requestDTO,
-                                                          @RequestParam Long userId) {
-        FolderResponseDTO updatedFolder = folderService.updateFolder(folderId, requestDTO, userId);
+                                                          @RequestBody FolderRequestDTO requestDTO) {
+        // 폴더 서비스를 통해 폴더 정보 업데이트 후 결과 반환
+        FolderResponseDTO updatedFolder = folderService.updateFolder(folderId, requestDTO);
         return ResponseEntity.ok(updatedFolder);
     }
 
-    //특정 폴더 삭제
+    // 폴더 삭제 API
     @DeleteMapping("/{folderId}")
     public ResponseEntity<Void> deleteFolder(@PathVariable Long projectId,
                                              @PathVariable Long folderId,
                                              @RequestParam Long userId) {
+        // 폴더 서비스를 통해 폴더 삭제
         folderService.deleteFolder(folderId, userId);
         return ResponseEntity.noContent().build();
     }
