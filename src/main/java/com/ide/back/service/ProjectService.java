@@ -9,20 +9,21 @@ import com.ide.back.dto.ProjectResponseDTO;
 import com.ide.back.repository.MemberRepository;
 import com.ide.back.repository.ProjectMemberRepository;
 import com.ide.back.repository.ProjectRepository;
-import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 @Service
 public class ProjectService {
+    private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
     private final ProjectRepository projectRepository;
     private final MemberRepository memberRepository;
     private final ProjectMemberService projectMemberService;
-
     private final ProjectMemberRepository projectMemberRepository;
 
     @Autowired
@@ -33,101 +34,134 @@ public class ProjectService {
         this.projectMemberRepository = projectMemberRepository;
     }
 
-    //프로젝트 생성
+    // 프로젝트 생성 메서드
+    @org.springframework.transaction.annotation.Transactional
     public ProjectResponseDTO createProject(ProjectRequestDTO projectRequestDTO) {
-        Member member = memberRepository.findById(projectRequestDTO.getUserId())
+        // 유저 ID로 유저를 조회하여 가져오기
+        Member user = memberRepository.findById(projectRequestDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Project project = projectRequestDTO.toEntity(member);
+
+
+        // 프로젝트 엔티티 생성
+        Project project = projectRequestDTO.toEntity(user);
+
+        // 프로젝트 저장
         project = projectRepository.save(project);
 
-        ProjectMember projectMember = new ProjectMember();
-        projectMember.setUser(member);
-        projectMember.setProject(project);
-        projectMemberRepository.save(projectMember);
+        // 프로젝트 멤버 추가
+        addProjectMembers(project, projectRequestDTO.getMemberIds());
 
+        // 프로젝트를 응답 DTO로 변환하여 반환
         return convertToResponseDTO(project);
     }
 
-    //프로젝트 검색
-    public ProjectResponseDTO getProjectById(Long id,Long userId) {
-        if (!isMemberOfProject(userId, id)) {
-            throw new RuntimeException("User is not a member of the requested project");
-        }
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
-        return convertToResponseDTO(project);
-    }
-
-    //유저 프로젝트 검색
-    public List<ProjectResponseDTO> getAllProjects(Long userId) {
-        Member user = memberRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        List<Project> projects = projectRepository.findByUser(user);
-
+    public List<ProjectResponseDTO> getAllProjects() {
+        List<Project> projects = projectRepository.findAll();
         return projects.stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    // 프로젝트 수정
-    @Transactional
-    public ProjectResponseDTO updateProject(Long id, ProjectRequestDTO projectRequestDTO) {
+    public ProjectResponseDTO getProjectById(Long id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
-        if (projectRequestDTO.getUserId() != null) {
-            Member user = memberRepository.findById(projectRequestDTO.getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            if (!isMemberOfProject(user.getId(), id)) {
-                throw new RuntimeException("User is not a member of the project");
-            }
-            project.setUser(user);
-        }
-
-        project.updateProjectFromDTO(projectRequestDTO);
-        project = projectRepository.save(project);
         return convertToResponseDTO(project);
     }
 
+    @org.springframework.transaction.annotation.Transactional
+    public ProjectResponseDTO updateProject(Long projectId, Long userId, ProjectRequestDTO projectRequestDTO) {
+        // Retrieve the project from the repository
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
 
-    // 프로젝트 삭제
-    @Transactional
-    //프로젝트 삭제
-    public void deleteProject(Long id) {
-        projectRepository.deleteById(id);
+        // Check if the user is the owner of the project
+        if (!project.getUser().getId().equals(userId)) {
+            throw new RuntimeException("User is not authorized to update this project");
+        }
+
+        // Update project details
+        project.setProjectName(projectRequestDTO.getProjectName());
+        project.setDescription(projectRequestDTO.getDescription());
+
+        // Check if there are any new members to be added
+        if (projectRequestDTO.getMemberIds() != null && !projectRequestDTO.getMemberIds().isEmpty()) {
+            // Delegate the task of updating project members to the project member service
+            projectMemberService.updateProjectMembers(project, projectRequestDTO.getMemberIds());
+        }
+
+        // Save the updated project in the repository
+        project = projectRepository.save(project);
+
+        return convertToResponseDTO(project);
+    }
+    @org.springframework.transaction.annotation.Transactional
+    public void deleteProject(Long projectId, Long userId) {
+        // Retrieve the project from the repository
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        // Check if the user is the owner of the project
+        if (!project.getUser().getId().equals(userId)) {
+            throw new RuntimeException("User is not authorized to delete this project");
+        }
+
+        // Delete the project
+        projectRepository.delete(project);
     }
 
-    // 프로젝트 멤버 조회
-    public List<ProjectMemberResponseDTO> getProjectMembers(Long projectId) {
-        List<ProjectMember> projectMembers = projectMemberRepository.findByProjectId(projectId);
-        return projectMembers.stream()
-                .map(pm -> {
-                    ProjectMemberResponseDTO dto = new ProjectMemberResponseDTO();
-                    dto.setId(pm.getId());
-                    dto.setUserId(pm.getUser().getId());
-                    dto.setProjectId(pm.getProject().getId());
-                    return dto;
-                })
+    @Transactional(readOnly = true)
+    public List<ProjectResponseDTO> getProjectsForMember(Long userId) {
+        List<Long> projectIds = projectMemberService.getProjectIdsForMember(userId);
+        List<Project> projects = projectRepository.findByIdIn(projectIds);
+        return convertProjectsToDTOs(projects);
+    }
+
+    private List<ProjectResponseDTO> convertProjectsToDTOs(List<Project> projects) {
+        return projects.stream()
+                .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
+    private void addProjectMembers(Project project, List<Long> memberIds) {
+        List<ProjectMember> projectMembers = memberIds.stream()
+                .map(memberId -> {
+                    // Search and retrieve members by member ID
+                    Member member = memberRepository.findById(memberId)
+                            .orElseThrow(() -> new RuntimeException("Member not found"));
+                    // Create and set project members
+                    ProjectMember projectMember = new ProjectMember();
+                    projectMember.setUser(member);
+                    projectMember.setProject(project);
+                    return projectMember;
+                })
+                .collect(Collectors.toList());
 
-    // 프로젝트 멤버 확인
-    public boolean isMemberOfProject(Long memberId, Long projectId) {
-        return projectMemberService.isMemberOfProject(memberId, projectId);
+        // Save the project members in the repository
+        projectMemberRepository.saveAll(projectMembers);
     }
 
-
-
-    // DTO로 변환하는 메서드
     private ProjectResponseDTO convertToResponseDTO(Project project) {
         ProjectResponseDTO dto = new ProjectResponseDTO();
         dto.setId(project.getId());
+        dto.setUser(project.getUser());
         dto.setProjectName(project.getProjectName());
         dto.setDescription(project.getDescription());
         dto.setCreatedAt(project.getCreatedAt());
         dto.setOwner(project.getOwner());
-        dto.setAuthor(project.getAuthor());
-        return dto;
 
+        List<ProjectMemberResponseDTO> memberDTOs = project.getProjectMembers().stream()
+                .map(this::convertProjectMemberToDTO)
+                .collect(Collectors.toList());
+        dto.setProjectMembers(memberDTOs);
+
+        return dto;
+    }
+
+    private ProjectMemberResponseDTO convertProjectMemberToDTO(ProjectMember projectMember) {
+        ProjectMemberResponseDTO dto = new ProjectMemberResponseDTO();
+        dto.setId(projectMember.getId());
+        dto.setUserId(projectMember.getUser().getId());
+        dto.setProjectId(projectMember.getProject().getId());
+        return dto;
     }
 }

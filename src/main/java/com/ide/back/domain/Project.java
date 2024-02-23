@@ -4,6 +4,8 @@ import com.ide.back.dto.ProjectRequestDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,17 +33,17 @@ public class Project {
     private String description;
 
     @CreationTimestamp
-    @Column(nullable = false)
+    @Column(name = "created_at",nullable = false)
     private LocalDateTime createdAt;
 
-    // 어떻게 구현해야 하는지 모름
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     @Column(nullable = false, length = 30)
     private String owner;
 
-    @Column(nullable = false, length = 30)
-    private String author;
+//    @Column(nullable = false, length = 30)
+//    private String author;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Folder> folders = new ArrayList<>();
@@ -60,20 +62,29 @@ public class Project {
 //    }
 
     @Builder
-    public Project(Member user, String projectName, String description, LocalDateTime createdAt, String owner, String author) {
+    public Project(Member user, String projectName, String description, LocalDateTime createdAt, String owner) {
         this.user = user;
         this.projectName = projectName;
         this.description = description;
         this.createdAt = createdAt;
         this.owner = owner;
-        this.author = author;
+    }
+
+    public void addMembers(List<Long> memberIds) {
+        for(Long memberId : memberIds) {
+            Member member = new Member();
+            member.setId(memberId);
+            ProjectMember projectMember = new ProjectMember();
+            projectMember.setUser(member);
+            projectMember.setProject(this);
+            this.projectMembers.add(projectMember);
+        }
     }
 
     public void updateProjectFromDTO(ProjectRequestDTO updatedProjectDTO) {
         this.projectName = updatedProjectDTO.getProjectName();
         this.description = updatedProjectDTO.getDescription();
         this.owner = updatedProjectDTO.getOwner();
-        this.author = updatedProjectDTO.getAuthor();
     }
 }
 
