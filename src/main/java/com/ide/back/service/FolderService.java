@@ -77,7 +77,7 @@ public class FolderService {
                 .orElseThrow(() -> new IllegalArgumentException("Folder not found"));
 
         // 프로젝트의 멤버인지 확인
-        if (!projectMemberService.isMemberOfProject(userId, folder.getProject().getId())) {
+        if (!projectMemberService.isMemberOfProject(userId, folder.getProject().getProjectId())) {
             throw new RuntimeException("User is not a member of this project");
         }
 
@@ -113,7 +113,7 @@ public class FolderService {
                 .orElseThrow(() -> new IllegalArgumentException("Folder not found"));
 
         // 프로젝트의 멤버인지 확인
-        if (!projectMemberService.isMemberOfProject(userId, folder.getProject().getId())) {
+        if (!projectMemberService.isMemberOfProject(userId, folder.getProject().getProjectId())) {
             throw new RuntimeException("User is not a member of this project");
         }
 
@@ -127,7 +127,7 @@ public class FolderService {
         dto.setFolderName(folder.getFolderName());
         dto.setParentId(folder.getParentFolder() != null ? folder.getParentFolder().getId() : null);
         dto.setUserId(folder.getUser() != null ? folder.getUser().getId() : null);
-        dto.setProjectId(folder.getProject().getId());
+        dto.setProjectId(folder.getProject().getProjectId());
         return dto;
     }
 
